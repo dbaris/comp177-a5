@@ -1,41 +1,56 @@
-public class PieChart extends Chart{
+public class Polar extends Chart{
 
-  float total = 0;
+  float max;
+  float theta;
   
-  public PieChart(Data data, int chartX, int chartY, int chartWidth, int chartHeight){
+  public Polar(Data data, int chartX, int chartY, int chartWidth, int chartHeight){
     super(data, chartX, chartY, chartWidth, chartHeight);
-    this.name = "Pie Chart";
+    this.name = "Polar Chart";
+    this.max = 0;
     
     for(int i = 0; i < data.size; i++) {
-      total += this.data.dataPoints[i].value;
+      if (this.data.dataPoints[i].value > this.max) {
+          this.max = this.data.dataPoints[i].value;
+      }
     }
+    this.theta = TWO_PI / data.size;
     
   }
 
   @Override
   public void draw(){
     // Be careful of this!!
-    float r = this.viewWidth * .4; 
+    float r = this.viewWidth * .8; 
     PVector center = new PVector(this.viewX + (this.viewWidth/2), this.viewY + (this.viewHeight /2));
 
     float start = 0;
-    float end;
+    float end = 0;
     stroke(0);
     strokeWeight(1);
     for (int i = 0; i < data.size; i++) {
-      end = start + this.data.dataPoints[i].value * 2 * PI / this.total;
-   
-     if (this.data.dataPoints[i].isMarked) {
+      end += this.theta;
+      float ratio = this.data.dataPoints[i].value / this.max;
+      
+      if (this.data.dataPoints[i].isMarked) {
           fill(#b3cce0);
       } else {
           fill(255);
       }
-   
+      
       arc(center.x, center.y,
-      r * 2,
-      r * 2,
+      r * ratio,
+      r * ratio,
       start,
       end, PIE);
+      
+      //if (this.data.dataPoints[i].isMarked) {
+      //  float angle = start + (.5 * (end - start));
+      //  PVector c = getPoint(angle, center, .5* r);
+      //  fill(0);
+      //  ellipse(c.x,c.y, 5, 5);
+      //  noFill();
+
+      //}
       
       start = end;
     }

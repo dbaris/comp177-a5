@@ -1,0 +1,3 @@
+PartipantID,TrialIndex,ChartName,TruePercentage,ReportedPercentage,Error,Angle
+p7,0,Pie Chart,0.40449437,0.4,-2.9490387,2.129229
+p7,1,Polar Chart,0.5888889,0.6,-2.877143,0.8975979
