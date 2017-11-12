@@ -6,26 +6,31 @@ public class Data{
   private int size;
   private DataPoint[] dataPoints;
   Random rand = new Random();
+  float total;
 
   public Data(int size){
     this.size = size;
     this.dataPoints = new DataPoint[size];
     println(this.size);
     int count = 2;
-
+    total = 0;
+    
     for (int i = 0; i < size; i++) {
       
         if (count > 0){
             int value = rand.nextInt((100 - 20) + 1) + 20;
             this.dataPoints[i] = new DataPoint(float(value), true);
             count--;
+            total += value;
         } else {
             int value = rand.nextInt((100 - 20) + 1) + 20;
             this.dataPoints[i] = new DataPoint(float(value), false);
-        }   
+            total += value;
+        }  
     }
 
     Collections.shuffle(Arrays.asList(this.dataPoints)); 
+    
   }
 
   //ToDo: feel free to add varialves and methods for your convenience

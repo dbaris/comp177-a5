@@ -1,8 +1,8 @@
 public class ExperimentKeeper{
 
   private static final String PARTICIPANT_ID     = "p7"; //ToDo: assign a unique id for each participant
-  private static final int NUMBER_OF_TRIALS      = 10;    //ToDo: deside # trials per participant
-  private static final int NUMBER_OF_DATA_POINTS = 10;   //ToDo: deside # data points per trial
+  private static final int NUMBER_OF_TRIALS      = 2;    //ToDo: deside # trials per participant
+  private static final int NUMBER_OF_DATA_POINTS = 7;   //ToDo: deside # data points per trial
 
   private static final int STATE_PROLOGUE = 0;
   private static final int STATE_TRIAL    = 1;
@@ -61,7 +61,7 @@ public class ExperimentKeeper{
       if (i % 2 == 0) {
           charts[i] = new PieChart(dataset[i], chartX, chartY, chartWidth, chartHeight);
       } else {
-          charts[i] = new BarChart(dataset[i], chartX, chartY, chartWidth, chartHeight);
+          charts[i] = new Polar(dataset[i], chartX, chartY, chartWidth, chartHeight);
       }
     }
 
@@ -86,6 +86,7 @@ public class ExperimentKeeper{
     table.addColumn("TruePercentage");
     table.addColumn("ReportedPercentage");
     table.addColumn("Error");
+    table.addColumn("Angle");
     return table;
   }
 
@@ -112,7 +113,29 @@ public class ExperimentKeeper{
             float reportedPercentage = float(this.answer) /100; //ToDo: Note that "this.answer" contains what the participant inputed
             float error = log(abs(reportedPercentage - truePercentage) + .125) / log(2);
             //ToDo: decide how to compute the log error from Cleveland and McGill (see the handout for details)
-
+            
+            float angle = 0;
+            for (int i = 0; i < NUMBER_OF_DATA_POINTS; i++) {
+                if (data.dataPoints[i].isMarked) { // first marked segment
+                    for (int j = i + 1; j < NUMBER_OF_DATA_POINTS; j++) {
+                        if (data.dataPoints[j].isMarked) {
+                            if (this.currentTrialIndex % 2 == 0 ) { // pie
+                                for (int k = i + 1; k < j; k++) {
+                                  angle += (data.dataPoints[k].value / data.total) * TWO_PI;
+                                }
+                            } else { // polar
+                                float segmentAngle = TWO_PI / NUMBER_OF_DATA_POINTS;
+                                angle = segmentAngle * (j - i - 1);
+                            }
+                            break;
+                        }
+                    }
+                     break;
+                }
+           
+            }
+            // TODO: DON'T FORGET TO FINISH CHANGING THE ANGLE FOR > 180
+            
             TableRow row = this.result.addRow();
             row.setString("PartipantID", this.participantID);
             row.setInt("TrialIndex", this.currentTrialIndex);
@@ -120,6 +143,7 @@ public class ExperimentKeeper{
             row.setFloat("TruePercentage", truePercentage);
             row.setFloat("ReportedPercentage", reportedPercentage);
             row.setFloat("Error", error);
+            row.setFloat("Angle", angle);
 
             ++this.currentTrialIndex;
             if(this.currentTrialIndex < this.totalTrials){
