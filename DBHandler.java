@@ -17,7 +17,7 @@ public class DBHandler {
     private static int sqlID = 0;
 
     public static Connection getConnection() {
-        String url = "jdbc:mysql://visualization.cwdj44qfoahu.us-east-2.rds.amazonaws.com";
+        String url = "jdbc:mysql://visualization.cwdj44qfoahu.us-east-2.rds.amazonaws.com/a5";
         
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -70,7 +70,14 @@ public class DBHandler {
         }
         System.out.println(sqlID + ": " + query);
         sqlID++;
-        return smt.executeQuery(query);
+        
+        if (query.contains("INSERT")) {
+           smt.executeUpdate(query);
+           return null;
+        }
+        else {
+           return smt.executeQuery(query);
+        }
     }
     
     public static void exeUpdateQuery(String query) throws SQLException {

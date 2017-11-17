@@ -10,13 +10,14 @@ public class ExperimentKeeper{
   private static final int NUMBER_OF_TRIALS      = 10;    //ToDo: deside # trials per participant
   private static final int NUMBER_OF_DATA_POINTS = 7;   //ToDo: deside # data points per trial
 
+
   private static final int STATE_PROLOGUE = 0;
   private static final int STATE_TRIAL    = 1;
   private static final int STATE_EPILOGUE = 2;
 
   private Canvas canvas;
   private String participantID;
-  private int totalTrials;
+  private int totalTrials, id;
   private int currentTrialIndex;
   private Chart[] charts;
   private Chart chart;
@@ -50,6 +51,19 @@ public class ExperimentKeeper{
     this.polErr = 0;
     this.pieAvgErr = 0;
     this.polAvgErr = 0;
+    
+    String sql = "SELECT max(id) FROM `results`";
+           
+    ResultSet rs = null;
+    try {
+         rs = (ResultSet)DBHandler.exeQuery(sql);
+         rs.next();
+         this.id = 1 + rs.getInt("max(id)");
+    } catch (SQLException e) {
+         e.printStackTrace();
+         this.id = 0;
+    }
+    
   }
 
   public Data[] generateDatasetBy(int numberOfTrials, int numberOfDataPointPerTrial){
@@ -123,8 +137,8 @@ public class ExperimentKeeper{
 
             Data data = this.chart.getData();
 
-            float truePercentage = truePercentage(data);     //ToDo: decide how to compute the right answer
-            float reportedPercentage = float(this.answer) /100; //ToDo: Note that "this.answer" contains what the participant inputed
+            float truePercentage = truePercentage(data) * 100;     //ToDo: decide how to compute the right answer
+            float reportedPercentage = float(this.answer); //ToDo: Note that "this.answer" contains what the participant inputed
             float error = log(abs(reportedPercentage - truePercentage) + .125) / log(2);
             //ToDo: decide how to compute the log error from Cleveland and McGill (see the handout for details)
             
@@ -181,23 +195,42 @@ public class ExperimentKeeper{
             row.setFloat("Angle", angle);
 
             ++this.currentTrialIndex;
+           
+            
+            String sql = "INSERT INTO `results` VALUES(" + this.id + ", '" + this.chart.getName() + "', " + error + ", " + angle + ")";
+           
+            ResultSet rs = null;
+            try {
+                  rs = (ResultSet)DBHandler.exeQuery(sql);
+                  //rs.next();
+                  //this.pieAvgErr = rs.getFloat("avg( error )");
+            } catch (SQLException e) {
+                  e.printStackTrace();
+            }
+            
+            
             if(this.currentTrialIndex < this.totalTrials){
               this.chart = this.charts[this.currentTrialIndex];
               this.answer = "";
             } else {
               this.state = STATE_EPILOGUE;
-              String sql = "SELECT avg(error) FROM results WHERE chart='pie'";
-              ResultSet rs = null;
+              sql = "SELECT avg( error ) FROM `results` WHERE chart='pie'";
+           
+              rs = null;
               try {
-                  rs = (ResultSet)DBHandler.exeQuery(sql); 
-                  this.pieAvgErr = rs.getFloat("error");
+                  rs = (ResultSet)DBHandler.exeQuery(sql);
+                  rs.next();
+                  this.pieAvgErr = rs.getFloat("avg( error )");
               } catch (SQLException e) {
                   e.printStackTrace();
               }
-              sql = "SELECT avg(error) FROM results WHERE chart='polar'";
+              
+              sql = "SELECT avg( error ) FROM `results` WHERE chart='polar'";
+              
               try {
                   rs = (ResultSet)DBHandler.exeQuery(sql);
-                  this.polAvgErr = rs.getFloat("error");
+                  rs.next();
+                  this.polAvgErr = rs.getFloat("avg( error )");
               } catch (SQLException e) {
                   e.printStackTrace();
               }

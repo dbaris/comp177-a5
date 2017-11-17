@@ -5,7 +5,7 @@ public class Polar extends Chart{
   
   public Polar(Data data, int chartX, int chartY, int chartWidth, int chartHeight){
     super(data, chartX, chartY, chartWidth, chartHeight);
-    this.name = "Polar Chart";
+    this.name = "polar";
     this.max = 0;
     
     for(int i = 0; i < data.size; i++) {

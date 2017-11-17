@@ -4,7 +4,7 @@ public class PieChart extends Chart{
   
   public PieChart(Data data, int chartX, int chartY, int chartWidth, int chartHeight){
     super(data, chartX, chartY, chartWidth, chartHeight);
-    this.name = "Pie Chart";
+    this.name = "pie";
     
     for(int i = 0; i < data.size; i++) {
       total += this.data.dataPoints[i].value;

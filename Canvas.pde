@@ -10,6 +10,7 @@ public class Canvas extends Viewport{
   private TextField answerTextField;
   private Button nextButton;
   private Button closeButton;
+  private BarChart bar;
 
   public Canvas(int canvasX, int canvasY, int canvasWidth, int canvasHeight){
     super(canvasX, canvasY, canvasWidth, canvasHeight);
@@ -23,7 +24,9 @@ public class Canvas extends Viewport{
     this.disagreeButton = new Button("DISAGREE", true, this.viewCenterX - 50 - buttonWidth, this.viewCenterY + 160, buttonWidth, buttonHeight);
     this.answerTextField = new TextField(this.viewCenterX - 140, this.viewCenterY + 200, textFieldWidth, textFieldHeight);
     this.nextButton = new Button("NEXT", false, this.viewCenterX + 80, this.viewCenterY + 200, buttonWidth, buttonHeight);
-    this.closeButton = new Button("CLOSE", true, this.viewCenterX - (buttonWidth / 2), this.viewCenterY + 100, buttonWidth, buttonHeight);
+    this.closeButton = new Button("CLOSE", true, this.viewCenterX - (buttonWidth / 2), this.viewCenterY + 300, buttonWidth, buttonHeight);
+    Data d = new Data(0);
+    this.bar = new BarChart(d, int(canvasWidth * .45), int(canvasHeight * .4), canvasWidth / 2, canvasHeight / 2);
   }
 
   @Override
@@ -80,14 +83,15 @@ public class Canvas extends Viewport{
   }
 
   public void drawClosingMessage(float pieErr, float polErr, float pieAvgErr, float polAvgErr){
+    
     fill(0);
-    textSize(60);
+    textSize(40);
     textAlign(CENTER, CENTER);
-    text("Thanks!", this.viewCenterX, this.viewCenterY);
-    text("pie error: " + str(pieErr), this.viewCenterX, this.viewCenterY + 10);
-    text("pol error: " + str(polErr), this.viewCenterX, this.viewCenterY + 20);
-    text("pie average error: " + str(pieAvgErr), this.viewCenterX, this.viewCenterY + 30);
-    text("pol average error: " + str(polAvgErr), this.viewCenterX, this.viewCenterY + 40);
+    text("Results: ", viewCenterX, this.viewCenterY * 0.45);
+    
+    this.bar.draw_bar(pieErr, polErr, pieAvgErr, polAvgErr);
+    //text("Thanks!", this.viewCenterX, this.viewCenterY);
+
     this.closeButton.draw();
   }
 
