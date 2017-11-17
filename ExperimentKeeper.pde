@@ -140,6 +140,9 @@ public class ExperimentKeeper{
             float truePercentage = truePercentage(data) * 100;     //ToDo: decide how to compute the right answer
             float reportedPercentage = float(this.answer); //ToDo: Note that "this.answer" contains what the participant inputed
             float error = log(abs(reportedPercentage - truePercentage) + .125) / log(2);
+            if (error < 0) {
+              error = 0;
+            }
             //ToDo: decide how to compute the log error from Cleveland and McGill (see the handout for details)
             
             if (currentTrialIndex % 2 == 0) {
