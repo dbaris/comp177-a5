@@ -51,11 +51,21 @@ public class Canvas extends Viewport{
     text("(" + trialNumber + "/" + totalTrials + ")", this.viewX + this.viewWidth, this.viewY);
     textSize(16);
     textAlign(CENTER);
-    text("Two values are marked with dots. \n" +
-         "What percentage is the smaller of the larger? \n" +
-         "Please put your answer below. \n" +
-         "e.g. If you think the smaller is exactly a half of the larger, \n" +
-         "please input \"50\".", this.viewCenterX, y);
+    if (trialNumber % 2 == 1) { // pie charts
+        text("Note: Value is encoded by area.\n" +
+             "Two sections are highlighted. \n" +
+             "What percentage is the smaller of the larger? \n" +
+             "Please put your answer below. \n" +
+             "e.g. If you think the smaller is exactly a half of the larger, \n" +
+             "please input \"50\".", this.viewCenterX, y - 15);
+    } else {// polar
+        text("Note: Value is encoded in the radius.\n" +
+             "Two sections are highlighted. \n" +
+             "What percentage is the smaller of the larger? \n" +
+             "Please put your answer below. \n" +
+             "e.g. If you think the smaller is exactly a half of the larger, \n" +
+             "please input \"50\".", this.viewCenterX, y - 15);
+    }
     this.answerTextField.draw(answer);
     fill(0);
     textSize(16);

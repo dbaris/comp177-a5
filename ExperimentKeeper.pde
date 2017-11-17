@@ -1,7 +1,7 @@
 public class ExperimentKeeper{
 
   private static final String PARTICIPANT_ID     = "p7"; //ToDo: assign a unique id for each participant
-  private static final int NUMBER_OF_TRIALS      = 2;    //ToDo: deside # trials per participant
+  private static final int NUMBER_OF_TRIALS      = 10;    //ToDo: deside # trials per participant
   private static final int NUMBER_OF_DATA_POINTS = 7;   //ToDo: deside # data points per trial
 
   private static final int STATE_PROLOGUE = 0;
@@ -114,12 +114,21 @@ public class ExperimentKeeper{
             float error = log(abs(reportedPercentage - truePercentage) + .125) / log(2);
             //ToDo: decide how to compute the log error from Cleveland and McGill (see the handout for details)
             
+            float m1 = 0; // the angle of the first marked section
+            float m2 = 0; // the angle of the second marked section
             float angle = 0;
             for (int i = 0; i < NUMBER_OF_DATA_POINTS; i++) {
                 if (data.dataPoints[i].isMarked) { // first marked segment
+                    if (this.currentTrialIndex % 2 == 0) {
+                        m1 = (data.dataPoints[i].value / data.total) * TWO_PI;
+                    } else {
+                        m1 = TWO_PI / NUMBER_OF_DATA_POINTS;
+                        m2 = TWO_PI / NUMBER_OF_DATA_POINTS;
+                    }
                     for (int j = i + 1; j < NUMBER_OF_DATA_POINTS; j++) {
                         if (data.dataPoints[j].isMarked) {
                             if (this.currentTrialIndex % 2 == 0 ) { // pie
+                                m2 = (data.dataPoints[j].value / data.total) * TWO_PI;
                                 for (int k = i + 1; k < j; k++) {
                                   angle += (data.dataPoints[k].value / data.total) * TWO_PI;
                                 }
@@ -134,7 +143,13 @@ public class ExperimentKeeper{
                 }
            
             }
-            // TODO: DON'T FORGET TO FINISH CHANGING THE ANGLE FOR > 180
+            
+            //println((angle + m1 / 2 + m2 / 2) / TWO_PI * 360);
+            if ((angle + m1 / 2 + m2 / 2) > PI) { // if the angle is more than 180
+                angle = TWO_PI - (angle + m1 + m2);
+            }
+            
+            //println((angle + m1 / 2 + m2 / 2) / TWO_PI * 360);
             
             TableRow row = this.result.addRow();
             row.setString("PartipantID", this.participantID);
