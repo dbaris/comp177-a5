@@ -103,7 +103,7 @@ public class ExperimentKeeper{
     else if(this.state == STATE_TRIAL)
       this.canvas.drawTrialWith(this.chart, this.answer, this.currentTrialIndex + 1, this.totalTrials);
     else if(this.state == STATE_EPILOGUE)
-      this.canvas.drawClosingMessage(this.pieErr, this.polErr, this.pieAvgErr, this.polAvgErr);
+      this.canvas.drawClosingMessage(this.pieErr * 2 / NUMBER_OF_TRIALS, this.polErr * 2/ NUMBER_OF_TRIALS, this.pieAvgErr, this.polAvgErr);
   }
 
   private Table createResultTable(){
