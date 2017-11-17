@@ -1,3 +1,9 @@
+import controlP5.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class ExperimentKeeper{
 
   private static final String PARTICIPANT_ID     = "p7"; //ToDo: assign a unique id for each participant
@@ -17,6 +23,10 @@ public class ExperimentKeeper{
   private String answer;
   private Table result;
   private int state;
+  private float pieErr; // keeping track of the total error made with pie chart
+  private float polErr; // keeping track of the total error made with polar chart
+  private float pieAvgErr;
+  private float polAvgErr;
 
   public ExperimentKeeper(int canvasX, int canvasY, int canvasWidth, int canvasHeight){
     this.canvas = new Canvas(canvasX, canvasY, canvasWidth, canvasHeight);
@@ -36,6 +46,10 @@ public class ExperimentKeeper{
     this.answer = "";
     this.result = this.createResultTable();
     this.state = STATE_PROLOGUE;
+    this.pieErr = 0;
+    this.polErr = 0;
+    this.pieAvgErr = 0;
+    this.polAvgErr = 0;
   }
 
   public Data[] generateDatasetBy(int numberOfTrials, int numberOfDataPointPerTrial){
@@ -75,7 +89,7 @@ public class ExperimentKeeper{
     else if(this.state == STATE_TRIAL)
       this.canvas.drawTrialWith(this.chart, this.answer, this.currentTrialIndex + 1, this.totalTrials);
     else if(this.state == STATE_EPILOGUE)
-      this.canvas.drawClosingMessage();
+      this.canvas.drawClosingMessage(this.pieErr, this.polErr, this.pieAvgErr, this.polAvgErr);
   }
 
   private Table createResultTable(){
@@ -113,6 +127,12 @@ public class ExperimentKeeper{
             float reportedPercentage = float(this.answer) /100; //ToDo: Note that "this.answer" contains what the participant inputed
             float error = log(abs(reportedPercentage - truePercentage) + .125) / log(2);
             //ToDo: decide how to compute the log error from Cleveland and McGill (see the handout for details)
+            
+            if (currentTrialIndex % 2 == 0) {
+                this.pieErr += error;
+            } else {
+                this.polErr += error;
+            }
             
             float m1 = 0; // the angle of the first marked section
             float m2 = 0; // the angle of the second marked section
@@ -164,8 +184,24 @@ public class ExperimentKeeper{
             if(this.currentTrialIndex < this.totalTrials){
               this.chart = this.charts[this.currentTrialIndex];
               this.answer = "";
-            }else{
+            } else {
               this.state = STATE_EPILOGUE;
+              String sql = "SELECT avg(error) FROM results WHERE chart='pie'";
+              ResultSet rs = null;
+              try {
+                  rs = (ResultSet)DBHandler.exeQuery(sql); 
+                  this.pieAvgErr = rs.getFloat("error");
+              } catch (SQLException e) {
+                  e.printStackTrace();
+              }
+              sql = "SELECT avg(error) FROM results WHERE chart='polar'";
+              try {
+                  rs = (ResultSet)DBHandler.exeQuery(sql);
+                  this.polAvgErr = rs.getFloat("error");
+              } catch (SQLException e) {
+                  e.printStackTrace();
+              }
+              
             }
           }
           break;

@@ -1,3 +1,8 @@
+import controlP5.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.ResultSet;
+
 public class Canvas extends Viewport{
 
   private Button agreeButton;
@@ -74,11 +79,15 @@ public class Canvas extends Viewport{
     this.nextButton.draw();
   }
 
-  public void drawClosingMessage(){
+  public void drawClosingMessage(float pieErr, float polErr, float pieAvgErr, float polAvgErr){
     fill(0);
     textSize(60);
     textAlign(CENTER, CENTER);
     text("Thanks!", this.viewCenterX, this.viewCenterY);
+    text("pie error: " + str(pieErr), this.viewCenterX, this.viewCenterY + 10);
+    text("pol error: " + str(polErr), this.viewCenterX, this.viewCenterY + 20);
+    text("pie average error: " + str(pieAvgErr), this.viewCenterX, this.viewCenterY + 30);
+    text("pol average error: " + str(polAvgErr), this.viewCenterX, this.viewCenterY + 40);
     this.closeButton.draw();
   }
 
